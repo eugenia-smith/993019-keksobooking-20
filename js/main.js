@@ -76,8 +76,8 @@ var getOffer = function (id, location) {
   offer.address = location.x + ', ' + location.y;
   offer.price = getRandomInt(1000, 100000);
   offer.type = getRandomArrayElement(accommodationTypes);
-  offer.rooms = getRandomInt(1, 10);
-  offer.guests = getRandomInt(1, 4);
+  offer.rooms = getRandomInt(1, 3);
+  offer.guests = getRandomInt(0, 2);
   offer.checkin = getRandomArrayElement(checkinTime);
   offer.checkout = getRandomArrayElement(checkoutTime);
   offer.features = getFeatures();
@@ -103,3 +103,8 @@ var getPins = function () {
   }
   return arrPins;
 }
+
+//удаляет класс
+var map = document.querySelector('.map');
+map.classList.remove('map--faded');
+
