@@ -1,7 +1,7 @@
 'use strict';
 var locationLimits = {
   xmin: 130,
-  xmax: 630,
+  xmax: 1000,
   ymin: 130,
   ymax: 630
 };
@@ -96,9 +96,9 @@ var getPin = function (id) {
 };
 
 // создает массив пинов
-var getPins = function () {
+var getPins = function (num) {
   var arrPins = [];
-  for (var i = 1; i <= 8; i++) {
+  for (var i = 1; i <= num; i++) {
     arrPins.push(getPin(i));
   }
   return arrPins;
@@ -107,4 +107,17 @@ var getPins = function () {
 // удаляет класс
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
+
+// работа с шаблоном
+var pinTemplate = document.querySelector('#pin').content;
+
+var pinArr = getPins(8);
+
+for (var i = 0; i < pinArr.length; i++) {
+  var clone = pinTemplate.cloneNode(true);
+  var btn = clone.querySelector('.map__pin');
+  btn.setAttribute('style', 'left: ' + pinArr[i].location.x + 'px; top: ' + pinArr[i].location.y + 'px;');
+  var target = document.querySelector('.map__pins');
+  target.appendChild(clone);
+}
 
