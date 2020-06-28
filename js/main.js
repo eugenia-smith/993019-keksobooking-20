@@ -21,6 +21,8 @@ var locationLimits = {
   ymax: 630
 };
 
+var target = document.querySelector('.map__pins');
+
 // генерирует случайные числа
 var getRandomInt = function (min, max) {
   var rand = Math.random() * (max - min + 1) + min;
@@ -76,7 +78,7 @@ var getOfferCard = function (pin, newCard) {
   newCard.querySelector('.popup__avatar').src = pin.author.avatar;
   newCard.querySelector('.popup__title').textContent = pin.offer.title;
   newCard.querySelector('.popup__text--address').textContent = pin.offer.address;
-  newCard.querySelector('.popup__text--price').textContent = pin.offer.price;
+  newCard.querySelector('.popup__text--price').textContent = pin.offer.price + ' р. / ночь';
   newCard.querySelector('.popup__type').textContent = ACCOMMODATION_TYPES_RUS[pin.offer.type];
   newCard.querySelector('.popup__text--capacity').textContent = pin.offer.rooms + ' комнаты для ' + pin.offer.guests + ' гостей';
   newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + pin.offer.checkin + ' выезд до ' + pin.offer.checkout;
@@ -102,33 +104,33 @@ var getOfferCard = function (pin, newCard) {
   }
 };
 
-var createMock = function () {
+// удаляет класс
+var map = document.querySelector('.map');
+map.classList.remove('map--faded');
 
-  // удаляет класс
-  var map = document.querySelector('.map');
-  map.classList.remove('map--faded');
+// работа с шаблоном
+var pinTemplate = document.querySelector('#pin').content;
 
-  // работа с шаблоном
-  var pinTemplate = document.querySelector('#pin').content;
+var pinArr = getPins(8);
 
-  var pinArr = getPins(8);
-
+var renderPins = function () {
   for (var i = 0; i < pinArr.length; i++) {
     var clone = pinTemplate.cloneNode(true);
     var btn = clone.querySelector('.map__pin');
-    btn.setAttribute('style', 'left: ' + pinArr[i].location.x + 'px; top: ' + pinArr[i].location.y + 'px;');
-    var target = document.querySelector('.map__pins');
+    btn.style.left = pinArr[i].location.x + 'px';
+    btn.style.top = pinArr[i].location.y + 'px';
     target.appendChild(clone);
   }
-
-  // работа с шаблоном карточки предложения
-  var offerCardTemplate = document.querySelector('#card').content;
-  var mapCard = offerCardTemplate.querySelector('.map__card');
-
-  var newCard = mapCard.cloneNode(true);
-
-  getOfferCard(getRandomArrayElement(pinArr), newCard);
-  document.querySelector('.map__filters-container').before(newCard);
 };
 
-createMock();
+renderPins();
+
+// работа с шаблоном карточки предложения
+var offerCardTemplate = document.querySelector('#card').content;
+var mapCard = offerCardTemplate.querySelector('.map__card');
+
+var newCard = mapCard.cloneNode(true);
+
+getOfferCard(getRandomArrayElement(pinArr), newCard);
+document.querySelector('.map__filters-container').before(newCard);
+
