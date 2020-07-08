@@ -14,12 +14,40 @@ var PHOTO_DATA = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
+var pinDimentions = {
+  WIDTH: 40,
+  HEIGHT: 44
+};
+
+var roomsPriceList = {
+  MIN: 1000,
+  MAX: 1000000
+};
+
+var gestsNumber = {
+  MIN: 1,
+  MAX: 10
+};
+
+var roomsAvailable = {
+  MIN: 1,
+  MAX: 10
+};
+
 var locationLimits = {
   xmin: 130,
   xmax: 1000,
   ymin: 130,
   ymax: 630
 };
+
+var map = document.querySelector('.map');
+var mapPin = document.querySelector('.map__pin--main');
+var adsForm = document.querySelector('.ad-form');
+var adsFormFields = adsForm.querySelectorAll('.add-form__element');
+var addressInput = document.getElementById('address');
+var mapFilter = document.querySelector('.map__filters');
+var mapSelections = mapFilter.querySelectorAll('select');
 
 var target = document.querySelector('.map__pins');
 
@@ -37,7 +65,6 @@ var getRandomArrayElement = function (arr) {
 };
 
 // получает фрагент массива
-
 var getArrFragment = function (arr) {
   return arr.slice(0, getRandomInt(1, arr.length));
 };
@@ -58,10 +85,10 @@ var getPins = function (num) {
         title: 'Объявление ' + i,
         address: getRandomInt(locationLimits.xmin, locationLimits.xmax) +
          ', ' + getRandomInt(locationLimits.ymin, locationLimits.ymax),
-        price: getRandomInt(1000, 100000),
+        price: getRandomInt(roomsPriceList.MIN, roomsPriceList.MAX),
         type: getRandomArrayElement(ACCOMMODATION_TYPES),
-        rooms: getRandomInt(1, 3),
-        guests: getRandomInt(0, 2),
+        rooms: getRandomInt(roomsAvailable.MIN, roomsAvailable.MAX),
+        guests: getRandomInt(gestsNumber.MIN, gestsNumber.MAX),
         checkin: getRandomArrayElement(CHECKIN_TIME),
         checkout: getRandomArrayElement(CHECKOUT_TIME),
         features: getArrFragment(ACCOMMODATION_FEATURES),
@@ -104,9 +131,30 @@ var getOfferCard = function (pin, newCard) {
   }
 };
 
-// удаляет класс
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+var mapPinClickHandler = function () {
+  if (event.keyCode === 13 || event.which === 1) {
+    map.classList.remove('map--faded');
+    adsForm.classList.remove('ad-form--disabled');
+    changeEnablingMode(adsFormFields);
+    changeEnablingMode(mapSelections);
+    mapPin.removeEventListener('mousedown', mapPinClickHandler);
+    mapPin.removeEventListener('keydown', mapPinClickHandler);
+    // renderPins();
+  }
+};
+
+mapPin.addEventListener('mousedown', mapPinClickHandler);
+mapPin.addEventListener('keydown', mapPinClickHandler);
+
+// переключает режим полей формы
+var changeEnablingMode = function (toggles) {
+  for (var i = 0; i < toggles.length; i++) {
+    toggles[i].disabled = !toggles[i].disabled;
+  }
+};
+
+changeEnablingMode(adsFormFields);
+changeEnablingMode(mapSelections);
 
 // работа с шаблоном
 var pinTemplate = document.querySelector('#pin').content;
