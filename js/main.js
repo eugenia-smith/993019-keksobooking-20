@@ -46,6 +46,8 @@ var mapPin = document.querySelector('.map__pin--main');
 var adsForm = document.querySelector('.ad-form');
 var adsFormFields = adsForm.querySelectorAll('.add-form__element');
 var addressInput = document.getElementById('address');
+var roomsAvailableInput = document.getElementById('room_number');
+var guestsNumberInput = document.getElementById('capacity');
 var mapFilter = document.querySelector('.map__filters');
 var mapSelections = mapFilter.querySelectorAll('select');
 
@@ -155,6 +157,28 @@ var changeEnablingMode = function (toggles) {
 
 changeEnablingMode(adsFormFields);
 changeEnablingMode(mapSelections);
+
+var inputChangeHandler = function () {
+  if (roomsAvailableInput.value === '100' && guestsNumberInput.value !== '0') {
+    guestsNumberInput.setCustomValidity('Не для гостей');
+    return;
+  }
+
+  if (roomsAvailableInput.value !== '100' && guestsNumberInput.value === '0') {
+    guestsNumberInput.setCustomValidity('Введите число гостей');
+    return;
+  }
+
+  if (roomsAvailableInput.value < guestsNumberInput.value) {
+    guestsNumberInput.setCustomValidity('Очень много гостей, не хватает комнат');
+    return;
+  }
+
+  guestsNumberInput.setCustomValidity('');
+};
+
+roomsAvailableInput.addEventListener('change', inputChangeHandler);
+guestsNumberInput.addEventListener('change', inputChangeHandler);
 
 // работа с шаблоном
 var pinTemplate = document.querySelector('#pin').content;
