@@ -14,9 +14,12 @@ var PHOTO_DATA = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
+var Y_MIN = 130;
+var Y_MAX = 630;
+
 var pinDimentions = {
-  WIDTH: 40,
-  HEIGHT: 44
+  WIDTH: 65,
+  HEIGHT: 84
 };
 
 var roomsPriceList = {
@@ -34,24 +37,22 @@ var roomsAvailable = {
   MAX: 10
 };
 
-var locationLimits = {
-  xmin: 130,
-  xmax: 1000,
-  ymin: 130,
-  ymax: 630
-};
-
 var map = document.querySelector('.map');
 var mapPin = document.querySelector('.map__pin--main');
 var adsForm = document.querySelector('.ad-form');
 var adsFormFields = adsForm.querySelectorAll('.ad-form__element');
 var addressInput = document.getElementById('address');
+var priceInput = document.getElementById('price');
+var titleInput = document.getElementById('title');
+var timeInInput = document.getElementById('timein');
+var timeOutInput = document.getElementById('timeout');
 var roomsAvailableInput = document.getElementById('room_number');
 var guestsNumberInput = document.getElementById('capacity');
+var housingTypeInput = document.getElementById('type');
 var mapFilter = document.querySelector('.map__filters');
 var mapSelections = mapFilter.querySelectorAll('select');
 
-var target = document.querySelector('.map__pins');
+var targetArr = document.querySelector('.map__pins');
 
 // генерирует случайные числа
 var getRandomInt = function (min, max) {
@@ -80,13 +81,12 @@ var getPins = function (num) {
         avatar: 'img/avatars/user0' + i + '.png'
       },
       location: {
-        x: getRandomInt(locationLimits.xmin, locationLimits.xmax),
-        y: getRandomInt(locationLimits.ymin, locationLimits.ymax)
+        x: getRandomInt(0, map.offsetWidth),
+        y: getRandomInt(Y_MIN, Y_MAX)
       },
       offer: {
         title: 'Объявление ' + i,
-        address: getRandomInt(locationLimits.xmin, locationLimits.xmax) +
-         ', ' + getRandomInt(locationLimits.ymin, locationLimits.ymax),
+        address: getRandomInt(0, map.offsetWidth) + ', ' + getRandomInt(Y_MIN, Y_MAX),
         price: getRandomInt(roomsPriceList.MIN, roomsPriceList.MAX),
         type: getRandomArrayElement(ACCOMMODATION_TYPES),
         rooms: getRandomInt(roomsAvailable.MIN, roomsAvailable.MAX),
@@ -114,6 +114,9 @@ var getOfferCard = function (pin, newCard) {
   newCard.querySelector('.popup__features').innerHTML = '';
   newCard.querySelector('.popup__description').textContent = pin.offer.description;
   newCard.querySelector('.popup__photos').src = pin.offer.photos;
+  newCard.querySelector('.popup__close').addEventListener('click', function () {
+    newCard.remove();
+  });
 
   for (var k = 0; k < pin.offer.features.length; k++) {
     var featuresItem = document.createElement('li');
@@ -191,6 +194,44 @@ var inputChangeHandler = function () {
 roomsAvailableInput.addEventListener('change', inputChangeHandler);
 guestsNumberInput.addEventListener('change', inputChangeHandler);
 
+// значение поля адреса
+addressInput.value = Math.round(mapPin.offsetLeft - (pinDimentions.WIDTH / 2))
+                  + ', ' + Math.round(mapPin.offsetTop - (pinDimentions.HEIGHT / 2));
+
+// длина инпута с заголовком
+var setTitleInputRange = function (isRequired, minLength, maxLength) {
+  titleInput.required = isRequired;
+  titleInput.setAttribute('minlength', minLength);
+  titleInput.setAttribute('maxlength', maxLength);
+};
+
+// длина инпута с заголовком
+var setPriceInputRange = function (isRequired, maxValue, inputType) {
+  priceInput.required = isRequired;
+  priceInput.max = maxValue;
+  priceInput.type = inputType;
+};
+
+// проверка цена-опция
+var typePriceCompareHandler = function () {
+  switch (housingTypeInput.value) {
+    case 'bungalo': priceInput.min = '0';
+      break;
+    case 'flat': priceInput.min = '1000';
+      break;
+    case 'house': priceInput.min = '5000';
+      break;
+    case 'palace': priceInput.min = '10000';
+      break;
+  }
+};
+
+// проверка въезд-выезд
+var inOutTimeCompareHandler = function (evt) {
+  timeInInput.value = evt.target.value;
+  timeOutInput.value = evt.target.value;
+};
+
 // работа с шаблоном
 var pinTemplate = document.querySelector('#pin').content;
 
@@ -202,7 +243,7 @@ var renderPins = function () {
     var btn = clone.querySelector('.map__pin');
     btn.style.left = pinArr[i].location.x + 'px';
     btn.style.top = pinArr[i].location.y + 'px';
-    target.appendChild(clone);
+    targetArr.appendChild(clone);
   }
 };
 
