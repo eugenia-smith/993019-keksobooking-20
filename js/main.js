@@ -24,7 +24,7 @@ var roomsPriceList = {
   MAX: 1000000
 };
 
-var gestsNumber = {
+var guestsNumber = {
   MIN: 1,
   MAX: 10
 };
@@ -44,7 +44,7 @@ var locationLimits = {
 var map = document.querySelector('.map');
 var mapPin = document.querySelector('.map__pin--main');
 var adsForm = document.querySelector('.ad-form');
-var adsFormFields = adsForm.querySelectorAll('.add-form__element');
+var adsFormFields = adsForm.querySelectorAll('.ad-form__element');
 var addressInput = document.getElementById('address');
 var roomsAvailableInput = document.getElementById('room_number');
 var guestsNumberInput = document.getElementById('capacity');
@@ -90,7 +90,7 @@ var getPins = function (num) {
         price: getRandomInt(roomsPriceList.MIN, roomsPriceList.MAX),
         type: getRandomArrayElement(ACCOMMODATION_TYPES),
         rooms: getRandomInt(roomsAvailable.MIN, roomsAvailable.MAX),
-        guests: getRandomInt(gestsNumber.MIN, gestsNumber.MAX),
+        guests: getRandomInt(guestsNumber.MIN, guestsNumber.MAX),
         checkin: getRandomArrayElement(CHECKIN_TIME),
         checkout: getRandomArrayElement(CHECKOUT_TIME),
         features: getArrFragment(ACCOMMODATION_FEATURES),
@@ -133,30 +133,41 @@ var getOfferCard = function (pin, newCard) {
   }
 };
 
+// переключает режим полей формы
+var changeEnablingMode = function (toggles, mode) {
+  toggles.forEach(function (set) {
+    set.disabled = mode;
+  });
+};
+
+// деактивация страницы
+var deactivatePage = function () {
+  changeEnablingMode(adsFormFields, true);
+  changeEnablingMode(mapSelections, true);
+
+  mapPin.addEventListener('mousedown', mapPinClickHandler);
+  mapPin.addEventListener('keydown', mapPinClickHandler);
+};
+
+// активация страницы
+var activatePage = function () {
+  map.classList.remove('map--faded');
+  adsForm.classList.remove('ad-form--disabled');
+  changeEnablingMode(adsFormFields, false);
+  changeEnablingMode(mapSelections, false);
+  renderPins();
+};
+
 var mapPinClickHandler = function () {
-  if (event.keyCode === 13 || event.which === 1) {
-    map.classList.remove('map--faded');
-    adsForm.classList.remove('ad-form--disabled');
-    changeEnablingMode(adsFormFields);
-    changeEnablingMode(mapSelections);
+  if (event.keyCode === 13 || event.button === 0) {
     mapPin.removeEventListener('mousedown', mapPinClickHandler);
     mapPin.removeEventListener('keydown', mapPinClickHandler);
-    // renderPins();
+    activatePage();
   }
 };
 
-mapPin.addEventListener('mousedown', mapPinClickHandler);
-mapPin.addEventListener('keydown', mapPinClickHandler);
-
-// переключает режим полей формы
-var changeEnablingMode = function (toggles) {
-  for (var i = 0; i < toggles.length; i++) {
-    toggles[i].disabled = !toggles[i].disabled;
-  }
-};
-
-changeEnablingMode(adsFormFields);
-changeEnablingMode(mapSelections);
+// changeEnablingMode(adsFormFields);
+// changeEnablingMode(mapSelections);
 
 var inputChangeHandler = function () {
   if (roomsAvailableInput.value === '100' && guestsNumberInput.value !== '0') {
@@ -195,8 +206,6 @@ var renderPins = function () {
   }
 };
 
-renderPins();
-
 // работа с шаблоном карточки предложения
 var offerCardTemplate = document.querySelector('#card').content;
 var mapCard = offerCardTemplate.querySelector('.map__card');
@@ -206,3 +215,4 @@ var newCard = mapCard.cloneNode(true);
 getOfferCard(getRandomArrayElement(pinArr), newCard);
 document.querySelector('.map__filters-container').before(newCard);
 
+deactivatePage();
