@@ -52,7 +52,7 @@ var housingTypeInput = document.getElementById('type');
 var mapFilter = document.querySelector('.map__filters');
 var mapSelections = mapFilter.querySelectorAll('select');
 
-var targetArr = document.querySelector('.map__pins');
+var pinBundle = document.querySelector('.map__pins');
 
 // генерирует случайные числа
 var getRandomInt = function (min, max) {
@@ -134,6 +134,7 @@ var getOfferCard = function (pin, newCard) {
     photosContainer.append(image);
     image = image.cloneNode(true);
   }
+  return newCard;
 };
 
 // переключает режим полей формы
@@ -243,8 +244,18 @@ var renderPins = function () {
     var btn = clone.querySelector('.map__pin');
     btn.style.left = pinArr[i].location.x + 'px';
     btn.style.top = pinArr[i].location.y + 'px';
-    targetArr.appendChild(clone);
+    pinBundle.appendChild(clone);
   }
+};
+
+// попытка связать пин и карточку
+var setEventHandler = function () {
+  var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  pins.forEach(function (pin, i) {
+    pin.addEventListener('click', function () {
+      map.appendChild(getOfferCard(pinArr[i], newCard));
+    });
+  });
 };
 
 // работа с шаблоном карточки предложения
@@ -257,3 +268,4 @@ getOfferCard(getRandomArrayElement(pinArr), newCard);
 document.querySelector('.map__filters-container').before(newCard);
 
 deactivatePage();
+setEventHandler();
