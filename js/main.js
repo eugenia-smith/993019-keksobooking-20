@@ -12,7 +12,6 @@ var CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
 var PHOTO_DATA = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-// var TOTAL_COMMERCIALS = 8
 
 var Y_MIN = 130;
 var Y_MAX = 630;
@@ -37,6 +36,13 @@ var roomsAvailable = {
   MAX: 10
 };
 
+var housingPrice = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
+
 var map = document.querySelector('.map');
 var mapPin = document.querySelector('.map__pin--main');
 var sourcePin = document.querySelector('#pin').content;
@@ -54,7 +60,6 @@ var guestsNumberInput = document.getElementById('capacity');
 var housingTypeInput = document.getElementById('type');
 var mapFilter = document.querySelector('.map__filters');
 var mapSelections = mapFilter.querySelectorAll('select');
-
 var pinBundle = document.querySelector('.map__pins');
 
 // генерирует случайные числа
@@ -146,7 +151,6 @@ var renderPin = function (pin) {
   pinElement.querySelector('img').src = pin.author.avatar;
   pinElement.alt = pin.offer.title;
   pinElement.style = 'left: ' + pin.location.x + 'px; ' + 'top: ' + pin.location.y + 'px;';
-  pinElement.setAttribute('data-advert-id', pin.offer.advertId);
 
   pinElement.addEventListener('click', function () {
     map.appendChild(getOfferCard(pin, newCard));
@@ -254,27 +258,14 @@ var setPriceInputRange = function (isRequired, maxValue, inputType) {
   priceInput.type = inputType;
 };
 
-// проверка цена-опция
-var typePriceCompareHandler = function () {
-  switch (housingTypeInput.value) {
-    case 'bungalo': priceInput.min = '0';
-      break;
-    case 'flat': priceInput.min = '1000';
-      break;
-    case 'house': priceInput.min = '5000';
-      break;
-    case 'palace': priceInput.min = '10000';
-      break;
-  }
-};
+// var typePriceCompareHandler = function () {
+priceInput.key = housingPrice[housingTypeInput.value];
+// };
 
 // проверка въезд-выезд
 var inOutTimeCompareHandler = function (evt) {
   timeInInput.value = evt.target.value;
   timeOutInput.value = evt.target.value;
 };
-
-// getOfferCard(getRandomArrayElement(pinArr), newCard);
-// document.querySelector('.map__filters-container').before(newCard);
 
 deactivatePage();
