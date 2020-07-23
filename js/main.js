@@ -121,7 +121,7 @@ var getOfferCard = function (pin, newCard) {
   newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + pin.offer.checkin + ' выезд до ' + pin.offer.checkout;
   newCard.querySelector('.popup__features').innerHTML = '';
   newCard.querySelector('.popup__description').textContent = pin.offer.description;
-  newCard.querySelector('.popup__photos').src = pin.offer.photos;
+  newCard.querySelector('.popup__photos').innerHTML = '';
   newCard.querySelector('.popup__close').addEventListener('click', function () {
     newCard.remove();
   });
@@ -135,12 +135,14 @@ var getOfferCard = function (pin, newCard) {
   }
 
   var photosContainer = newCard.querySelector('.popup__photos');
-  var image = photosContainer.querySelector('.popup__photo');
 
   for (var i = 0; i < pin.offer.photos.length; i++) {
-    image.src = pin.offer.photos[i];
-    photosContainer.append(image);
-    image = image.cloneNode(true);
+    var photoItem = document.createElement('img');
+    photoItem = photoItem.cloneNode(true);
+    photoItem.src = pin.offer.photos[i];
+    photoItem.classList.add('popup__photo');
+
+    photosContainer.append(photoItem);
   }
   return newCard;
 };
